@@ -80,11 +80,11 @@
 	       (nth (mod x 4) +quadrant-names+)))
 
 (defun display-file (file-name)
-  (let ((p (parse-namestring file-name)))
-    (with-open-file (s p :direction :input)
+  (let ((*default-pathname-defaults* (pathname "~/quicklisp/local-projects/startrek/") ))
+    (with-open-file (s file-name :direction :input)
       (do ((l (read-line s) (read-line s nil 'eof)))
-	  ((eq l 'eof) nil)
-      (write-line l)))))
+          ((eq l 'eof) nil)
+        (write-line l)))))
 
 (defun setup-sectors ()
   (dotimes (j 8)
