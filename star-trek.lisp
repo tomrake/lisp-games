@@ -1,8 +1,10 @@
-(defconstant help-file "startrek.hlp")
-(defconstant pict-file "startrek.pic")
-(defconstant map-file "startrek.map")
+(in-package :startrek)
 
-(defconstant region-names
+(defconstant +help-file+ "startrek.hlp")
+(defconstant +pict-file+ "startrek.pic")
+(defconstant +map-file+ "startrek.map")
+
+(defconstant +region-names+
   (list "ANTARTES" "SIRIUS"
 	"RIGEL" "DENEB"
 	"POCYON" "CAPELLA"
@@ -13,7 +15,7 @@
 	"POLLOX" "SPICA")
   "Names of the quadrants regions")
 
-(defconstant quadrant-names (list "I" "II" "III" "IV"))
+(defconstant +quadrant-names+ (list "I" "II" "III" "IV"))
 
 (defstruct sector
   "Structure describing the datat of each sector."
@@ -36,25 +38,25 @@
 (defvar *total-klingons* 0)
 (defvar *total-starbases* 0)
 
-(defconstant start-energy 3000)
-(defconstant start-photon-torpedoes 10)
-(defconstant min-klingon-shield-energy 100)
-(defconstant max-klingon-shield-energy 300)
-(defconstant min-klingon-phaser-fire 50)
-(defconstant max-klingon-phaser-fire 200)
-(defconstant max-stars-sector 9)
-(defconstant min-klingons-galaxy 7)
-(defconstant max-klingons-galaxy 28)
-(defconstant max-starbases-galaxy 5)
-(defconstant min-days-mission 15)
-(defconstant max-days-mission 45)
-(defconstant start-star-date 3000)
+(defconstant +start-energy+ 3000)
+(defconstant +start-photon-torpedoes+ 10)
+(defconstant +min-klingon-shield-energy+ 100)
+(defconstant +max-klingon-shield-energy+ 300)
+(defconstant +min-klingon-phaser-fire+ 50)
+(defconstant +max-klingon-phaser-fire+ 200)
+(defconstant +max-stars-sector+ 9)
+(defconstant +min-klingons-galaxy+ 7)
+(defconstant +max-klingons-galaxy+ 28)
+(defconstant +max-starbases-galaxy+ 5)
+(defconstant +min-days-mission+ 15)
+(defconstant +max-days-mission+ 45)
+(defconstant +start-star-date+ 3000)
 
-(defvar *energy* start-energy)
+(defvar *energy* +start-energy+)
 (defvar *shield-energy* 0)
 (defvar *remaining-days* nil)
 (defvar *end-date* 0)
-(defvar *photon-torpedoes* start-photon-torpedoes)
+(defvar *photon-torpedoes* +start-photon-torpedoes+)
 (defvar *lost-game* nil)
 (defvar *won-game* nil)
 
@@ -73,9 +75,9 @@
     (if (numberp number) number nil)))
 
 (defun get-historical-name (x y)
-  (concatenate 'string (nth (+ (* y 2) (if (> x 3) 1 0)) region-names)
+  (concatenate 'string (nth (+ (* y 2) (if (> x 3) 1 0)) +region-names+)
 	       " "
-	       (nth (mod x 4) quadrant-names)))
+	       (nth (mod x 4) +quadrant-names+)))
 
 (defun display-file (file-name)
   (let ((p (parse-namestring file-name)))
@@ -92,7 +94,7 @@
 (defun fill-stars ()
   (dotimes (j 8)
     (dotimes (i 8)
-      (dotimes (k (1+ (random max-stars-sector)))
+      (dotimes (k (1+ (random +max-stars-sector+)))
 	(let ((x (random 8)) (y (random 8)))
 	  (setf (sector-star-list (aref *quadrants* i j))
 		(adjoin (list x y)
@@ -100,22 +102,22 @@
 
 (defun fill-klingons ()
   (progn
-    (setq *total-klingons* (+ min-klingons-galaxy
-			    (random (1+ (- max-klingons-galaxy min-klingons-galaxy)))))
+    (setq *total-klingons* (+ +min-klingons-galaxy+
+			    (random (1+ (- +max-klingons-galaxy+ +min-klingons-galaxy+)))))
     (setq *start-klingons* *total-klingons*)
     (dotimes (k *total-klingons*)
       (let ((quad-x (random 8)) (quad-y (random 8))
 	    (sect-x (random 8)) (sect-y (random 8))
-	    (shield-strength (+ min-klingon-shield-energy
-				(random (- max-klingon-shield-energy 
-					   min-klingon-shield-energy)))))
+	    (shield-strength (+ +min-klingon-shield-energy+
+				(random (- +max-klingon-shield-energy+
+					   +min-klingon-shield-energy+)))))
 	(setf (sector-klingon-list (aref *quadrants* quad-x quad-y))
 	      (cons (list sect-x sect-y shield-strength)
 		    (sector-klingon-list (aref *quadrants* quad-x quad-y))))))))
 
 (defun fill-starbases ()
   (progn
-    (setq *total-starbases* (1+ (random max-starbases-galaxy)))
+    (setq *total-starbases* (1+ (random +max-starbases-galaxy+)))
     (dotimes (k *total-starbases*)
       (let ((quad-x (random 8)) (quad-y (random 8))
 	    (sect-x (random 8)) (sect-y (random 8)))
@@ -129,9 +131,9 @@
     (fill-stars)
     (fill-klingons)
     (fill-starbases)
-    (setf *remaining-days* (+ (random (- max-days-mission min-days-mission))
-			    min-days-mission))
-    (setf *end-date* (+ start-star-date *remaining-days*))))
+    (setf *remaining-days* (+ (random (- +max-days-mission+ +min-days-mission+))
+			    +min-days-mission+))
+    (setf *end-date* (+ +start-star-date+ *remaining-days*))))
 
 (defun setup-*enterprise-location* ()
   (setf *enterprise-location*
@@ -215,7 +217,7 @@
       (write-line (report-status quad-x quad-y j)))
     (write-line  "----------------------------")
     nil))
-	 
+
 (defun scan-quadrant (quad-x quad-y)
   (if (sector-scannedp (aref *quadrants* quad-x quad-y))
       (let ((klingons (length (sector-klingon-list
@@ -240,7 +242,7 @@
 		  (write-string ": *** ")))
 	 (format *standard-output* ":~%"))
     (write-line "--------------------")))
-	  
+
 (defun cumulative-galactic-record ()
   (progn
     (terpri)
@@ -315,7 +317,7 @@
       (multiple-value-bind (quad-y sect-y) (truncate (/ fact-y 8))
 	(make-location :quad-x quad-x :quad-y quad-y
 		       :sect-x (* sect-x 8) :sect-y (* sect-y 8))))))
-		 
+
 (defun location= (loc1 loc2)
   (let ((loc1-quad-x (location-quad-x loc1))
 	(loc1-quad-y (location-quad-y loc1))
@@ -329,14 +331,14 @@
 	 (= loc1-quad-y loc2-quad-y)
 	 (= loc1-sect-x loc2-sect-x)
 	 (= loc1-sect-y loc2-sect-y))))
-	
+
 (defun warp-engine-control ()
   (block warp-control
     (let ((course)
 	  (warp-factor)
 	  (energy-consumption)
 	  (new-location))
-      
+
       (write-string "COURSE (1 - 9)? ")
       (force-output)
       (setq course (ignore-errors (parse-number (read-line))))
@@ -344,7 +346,7 @@
       (unless (numberp course)
 	(write-line "What??")
 	(return-from warp-control nil))
-      
+
       (unless (and (>= course 1) (<= course 9))
 	     (terpri)
 	     (write-line "Lt. Sulu reports 'incorrect course data sir!'")
@@ -366,12 +368,12 @@
 		warp-factor)
 	(terpri)
 	(return-from warp-control nil))
-      
+
       (when (and (> *warp-engine-status* 0.85) (> warp-factor 0.2))
 	(write-line "Warp-engines are damaged.  Maximum speed warp 0.2")
 	(terpri)
 	(setq warp-factor 0.2))
-     
+
       (setq energy-consumption (round (* warp-factor 8 2)))
 
       (if (< *energy* energy-consumption)
@@ -426,7 +428,7 @@
 	      "~%Your efficiency rating is ~3,2F.~2%"
 	      (* 1000 (/ *start-klingons* *remaining-days*)))
       (setf *won-game* t))))
-		      
+
 (defun phaser-control ()
   (block phaser
     (let ((klingon-list (sector-klingon-list
@@ -455,7 +457,7 @@
 	  (progn
 	    (terpri)
 	    (write-line "Select one of the following targets:")
-	    
+
 	    (let ((number 0))
 	      (loop for (i j) in klingon-list do
 		   (format *standard-output*
@@ -466,11 +468,11 @@
 	      (write-string "Selection? ")
 	      (force-output)
 	      (setq selection (ignore-errors (parse-number (read-line))))
-	      
+
 	      (unless (numberp selection)
 		(write-line "What??")
 		(return-from phaser nil))
-	      
+
 	      (when (or (< selection 0) (> selection number))
 		(terpri)
 		(write-line
@@ -495,7 +497,7 @@
 	(return-from phaser nil))
 
       (setf *energy* (- *energy* allotted-energy))
-      
+
       (let* ((klingon (nth selection klingon-list))
 	     (enterprise-pos (list (location-sect-x *enterprise-location*)
 				   (location-sect-y *enterprise-location*)))
@@ -549,7 +551,7 @@
     (when (< (- *shield-energy* energy-hit) 0)
       (enterprise-destroyed)
       (return-from calculate-enterprise-damage))
-    
+
     (when (> energy-hit (* *shield-energy* .15))
       (let ((damage (/ (random 100) 100))
 	    (system (random 8))
@@ -622,14 +624,14 @@
 
 ;	(enterprise-sect-x (location-sect-x *enterprise-location*))
 ;	(enterprise-sect-y (location-sect-y *enterprise-location*)))
-;    
+;
 ; ;   (loop for (sect-x sect-y) in klingon-list do
 ;	 (let ((klingon-shoots (if (= (random 2) 0) nil t)))
 ;	   (when klingon-shoots
-;	     (let* ((energy-fired (+ min-klingon-phaser-fire
+;	     (let* ((energy-fired (+ +min-klingon-phaser-fire+
 ;				     (random (1+
-;					      (- max-klingon-phaser-fire
-;						 min-klingon-phaser-fire)))))
+;					      (- +max-klingon-phaser-fire+
+;						 +min-klingon-phaser-fire+)))))
 ;		    (energy-hit (calculate-phaser-hit
 ;				 energy-fired
 ;				 (list enterprise-sect-x enterprise-sect-y)
@@ -647,36 +649,36 @@
 
 (defun klingon-phaser-fire ()
   (block phaser
-    (let ((klingon-list 
+    (let ((klingon-list
 	   (sector-klingon-list
-	    (aref *quadrants* 
+	    (aref *quadrants*
 		  (location-quad-x *enterprise-location*)
 		  (location-quad-y *enterprise-location*))))
 	  (enterprise-sect-x (location-sect-x *enterprise-location*))
 	  (enterprise-sect-y (location-sect-y *enterprise-location*))
 	  )
-    
+
       (loop for (sect-x sect-y) in klingon-list do
 	    (let ((klingon-shoots (if (= (random 2) 0) nil t)))
 	      (when klingon-shoots
-		(let* ((energy-fired (+ min-klingon-phaser-fire
+		(let* ((energy-fired (+ +min-klingon-phaser-fire+
 					(random (1+
-						 (- max-klingon-phaser-fire
-						    min-klingon-phaser-fire)))))
-		       (energy-hit (calculate-phaser-hit 
+						 (- +max-klingon-phaser-fire+
+						    +min-klingon-phaser-fire+)))))
+		       (energy-hit (calculate-phaser-hit
 				    energy-fired
 				    (list enterprise-sect-x enterprise-sect-y)
 				    (list sect-x sect-y))))
 		  (format *standard-output*
 			  "~%~D unit hit on Enterprise from ~D, ~D~%"
-			  energy-hit 
-			  (1+ sect-x) 
+			  energy-hit
+			  (1+ sect-x)
 			  (1+ sect-y))
 		  (when (> (- *shield-energy*  energy-hit) 0)
 		    (format *standard-output*
 			    "~& Shields now at ~D   ~%"
 			    (- *shield-energy* energy-hit)))
-		  (calculate-enterprise-damage  energy-hit)		  
+		  (calculate-enterprise-damage  energy-hit)
 		  ))))
       )))
 
@@ -687,12 +689,12 @@
       (write-line "All photon torpedos expended.")
       (terpri)
       (return-from torpedo nil))
-    
+
     (when (> *photon-torpedo-status* .85)
       (write-line "Photon tubes are not operational")
       (terpri)
       (return-from torpedo nil))
-    
+
     (let ((course))
       (write-string "COURSE (1-9)? ")
       (force-output)
@@ -701,16 +703,16 @@
       (unless (numberp course)
 	(write-line "What??")
 	(return-from torpedo nil))
-      
+
       (unless (and (>= course 1) (<= course 9))
 	(terpri)
 	(write-line "Ensign Checkov reports 'incorrect course data, sir!")
 	(return-from torpedo nil))
-      
+
       (decf *photon-torpedoes*)
       (terpri)
       (write-line "Torpedo track:")
-      
+
       (let* ((ratio (* (/ (1- course) 4) pi))
 	     (step-x (cos ratio))
 	     (step-y (- (sin ratio)))
@@ -764,7 +766,7 @@
 		     (write-line "and sentenced to 99 days hard labor at Cygnus 12!")
 		     (setf *lost-game* t)
 		     (return-from torpedo nil))
-		   (progn 
+		   (progn
 		     (write-line "Starfleet is revieing your record")
 		     (write-line "to consider you for court martial.")
 		     (terpri)
@@ -782,11 +784,11 @@
 (defun shield-control ()
   (block shield
     (let ((allotted-energy 0))
-      
+
       (when (> *shield-control-status* .85)
 	(write-line "Shields inoperable.")
 	(return-from shield nil))
-      
+
       (format *standard-output*
 	      "~&*Energy* currently allotted to shields = ~D units~%"
 	      *shield-energy*)
@@ -810,7 +812,7 @@
 
       (decf *energy* (- allotted-energy *shield-energy*))
       (setf *shield-energy* allotted-energy)
-     
+
       (write-line "Deflector control room reports:")
       (format *standard-output*
 	      "'Shields are now at ~D units at your command.'~%"
@@ -839,9 +841,9 @@
     (format *standard-output*
 	    "Library computer          ~3,2F~%" *library-computer-status*)
     (terpri)))
-	   
 
-(defun photon-torpedo-data () 
+
+(defun photon-torpedo-data ()
   (block data
     (let ((klingon-list (sector-klingon-list
 			 (aref *quadrants*
@@ -852,7 +854,7 @@
 	(write-line "Sensors report no klingons in this quadrant")
 	(terpri)
 	(return-from data nil))
-      
+
       (format *standard-output*
 	      "~%Distance to klingon battle cruiser~P~2%"
 	      (length klingon-list))
@@ -869,7 +871,7 @@
 	     (format *standard-output*
 		     "~&Klingon in sector ~D, ~D~%Course = ~3,2F~%Distance= ~3,2F~2%" (1+ i) (1+ j) (first data) (second data)))))))
 
-(defun starbase-nav-data () 
+(defun starbase-nav-data ()
   (block data
     (let ((starbase-list (sector-starbase-list
 			  (aref *quadrants*
@@ -880,7 +882,7 @@
 	(write-line "Sensors report no starbase in this quadrant")
 	(terpri)
 	(return-from data nil))
-      
+
       (format *standard-output*
 	      "~%Distance to starbase~P~2%"
 	      (length starbase-list))
@@ -900,7 +902,7 @@
 				  "~%Course = ~3,2F~%Distance= ~3,2F~2%")
 		     (1+ i) (1+ j) (first data) (second data)))))))
 
-(defun navigation-calculator () 
+(defun navigation-calculator ()
   (block navigation
     (terpri)
     (write-line "Navigation calculator")
@@ -919,22 +921,22 @@
 		    (write-string "Y coordinate (1..8): ")
 		    (force-output)
 		    (ignore-errors (parse-integer (read-line))))))
-      
+
       (unless (and (numberp quad-x) (numberp quad-y))
 	(write-line "What??")
 	(return-from navigation nil))
-      
+
       (when (or (< quad-x 1) (> quad-x 8)
 		(< quad-y 1) (> quad-y 8))
 	(terpri)
 	(write-line "Not a valid quadrant.")
 	(terpri)
 	(return-from navigation nil))
-      
+
       (let ((data (calculate-relative-course
 		   (sub-locations
 		    (make-location :quad-x (1- quad-x) :quad-y (1- quad-y)
-				   :sect-x 
+				   :sect-x
 				   (location-sect-x *enterprise-location*)
 				   :sect-y
 				   (location-sect-y *enterprise-location*))
@@ -943,7 +945,7 @@
 	(format t "~%Navigation~%Course = ~3,2F~%Distance= ~3,2F~2%"
 		(first data) (second data))))))
 
-(defun status-report () 
+(defun status-report ()
   (progn
     (format *standard-output* "~%Status report~%")
     (format *standard-output* "There are ~D Klingon~P left.~%"
@@ -955,10 +957,10 @@
 	    *total-starbases* *total-starbases*)
     nil))
 
-(defun galactic-region-name-map () 
-  (display-file map-file))
+(defun galactic-region-name-map ()
+  (display-file +map-file+))
 
-(defun library-computer () 
+(defun library-computer ()
   (block computer
     (when (> *library-computer-status* .85)
       (write-line "Library computer disabled.")
@@ -987,7 +989,7 @@
 	 (terpri)))
       nil)))
 
-(defun select-command () 
+(defun select-command ()
   (let ((command
 	 (progn
 	   (write-string "COMMAND? ")
@@ -1023,7 +1025,7 @@
 	 (write-line "XXX = resign command"))))
     quit))
 
-(defun describe-settings () 
+(defun describe-settings ()
   (progn
     (format *standard-output* "~2%Your instructions are as follows:")
     (format *standard-output*
@@ -1047,39 +1049,39 @@
 	     (1+ (location-quad-y *enterprise-location*))))))
 
 
-(defun found-starbase-quadrant () 
+(defun found-starbase-quadrant ()
   (let* ((quad-x (location-quad-x *enterprise-location*))
 	 (quad-y (location-quad-y *enterprise-location*))
 	 (sect-x (location-sect-x *enterprise-location*))
 	 (sect-y (location-sect-y *enterprise-location*))
 	 (starbase-list
 	  (sector-starbase-list (aref *quadrants* quad-x quad-y))))
-    
+
     (if (and starbase-list
 	      (find-if
 	       #'(lambda (x) (and (= (first x) sect-x)  (= (second x) sect-y)))
 	       starbase-list))
 	t
 	nil)))
-	    
+
 (defun dock-to-starbase ()
   (progn
     (write-line "Shields dropped for docking purposes.")
-    (setf *energy* start-energy)
+    (setf *energy* +start-energy+)
     (setf *shield-energy* 0)
-    (setf *photon-torpedoes* start-photon-torpedoes)
+    (setf *photon-torpedoes* +start-photon-torpedoes+)
     (complete-repair-enterprise-damage)))
- 
 
-(defun setup-parameters () 
-  (setf *energy* start-energy)
+
+(defun setup-parameters ()
+  (setf *energy* +start-energy+)
   (setf *shield-energy* 0)
   (setf *won-game* nil)
   (setf *lost-game* nil)
   (complete-repair-enterprise-damage))
 
 
-(defun update-date (number) 
+(defun update-date (number)
   (decf *remaining-days* number)
   (when (<= *remaining-days* 0)
     (format *standard-output*
@@ -1094,7 +1096,7 @@
 	    *total-klingons* *total-klingons*)
     (setf *lost-game* t)))
 
-(defun play-again-p () 
+(defun play-again-p ()
   (let ((command
 	 (progn
 	   (write-line "The federation is in need of a new starship commander")
@@ -1104,23 +1106,23 @@
 	   (ignore-errors (string-upcase (read-line))))))
     (if (and (stringp command) (string= command "AYE")) t nil)))
 
-(defun startrek () 
+(defun startrek ()
   (block main
     (terpri)
     (write-line "Welcome to StarTrek the game.")
     (terpri)
     (when (yes-or-no-p "Do you need instructions? ")
-      (display-file help-file))
+      (display-file +help-file+))
     (loop
        (setup-galaxy)
        (setup-*enterprise-location*)
        (setup-parameters)
-       
-       (display-file pict-file)
-       
+
+       (display-file +pict-file+)
+
        (describe-settings)
        (short-range-sensor-scan)
-      
+
        (block game
 	 (loop
 	      (let ((old-location *enterprise-location*))
