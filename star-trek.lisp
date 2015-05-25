@@ -1,5 +1,7 @@
 (in-package :startrek)
 
+(defconstant +base-file-path+ "~/quicklisp/local-projects/startrek/" )
+
 (defconstant +help-file+ "startrek.hlp")
 (defconstant +pict-file+ "startrek.pic")
 (defconstant +map-file+ "startrek.map")
@@ -80,7 +82,7 @@
 	       (nth (mod x 4) +quadrant-names+)))
 
 (defun display-file (file-name)
-  (let ((*default-pathname-defaults* (pathname "~/quicklisp/local-projects/startrek/") ))
+  (let ((*default-pathname-defaults* (pathname +base-file-path+) ))
     (with-open-file (s file-name :direction :input)
       (do ((l (read-line s) (read-line s nil 'eof)))
           ((eq l 'eof) nil)
@@ -348,9 +350,9 @@
 	(return-from warp-control nil))
 
       (unless (and (>= course 1) (<= course 9))
-	     (terpri)
-	     (write-line "Lt. Sulu reports 'incorrect course data sir!'")
-	     (return-from warp-control nil))
+        (terpri)
+        (write-line "Lt. Sulu reports 'incorrect course data sir!'")
+        (return-from warp-control nil))
 
       (write-string "WARP FACTOR (0-8)? ")
       (terpri)
@@ -402,8 +404,8 @@
 	    (write-line
 	     "Chief engineer Scott reports 'Warp engines shut down.'")
 	    (terpri)
-	    (return-from warp-control nil))
-	  (setq *enterprise-location* new-location)))))
+	    (return-from warp-control nil)))
+      (setq *enterprise-location* new-location))))
 
 (defun calculate-phaser-hit (*energy* first-pos second-pos)
   (let* ((first-sect-x (first first-pos))
@@ -608,8 +610,7 @@
       (update *phaser-status*)
       (update *photon-torpedo-status*)
       (update *damage-control-status*)
-      (update *library-computer-status*)
-      )))
+      (update *library-computer-status*))))
 
 (defun found-klingons-quadrant ()
   (let ((klingon-list
