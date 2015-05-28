@@ -2,4 +2,5 @@
 (asdf:defsystem #:startrek
     :serial t
     :components ((:file "package")
-                 (:file "star-trek")))
+                 (:file "star-trek")
+                 (:file "main")))

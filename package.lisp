@@ -1,3 +1,3 @@
 (defpackage #:startrek
   (:use #:cl)
-  (:export #:startrek))
+  (:export #:main))
