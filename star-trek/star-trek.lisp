@@ -1,10 +1,16 @@
 ;;; star-trek.lisp
-(in-package :startrek)
+(defpackage #:games/star-trek/star-trek
+  (:use #:cl)
+  (:export #:startrek))
+
+(in-package :games/star-trek/star-trek)
+
+(eval-when (:compile-toplevel)
+  (defconstant *source-path* (directory-namestring *compile-file-pathname*)))
 
 (defconstant help-file "startrek.hlp")
 (defconstant pict-file "startrek.pic")
 (defconstant map-file "startrek.map")
-(defvar *storage*)
 (defconstant region-names
     (list "ANTARES" "SIRUS"
 	  "RIGEL" "DENEB"
@@ -81,12 +87,11 @@
 	       (nth (mod x 4) quadrant-names)))
 
 (defun display-file (file-name)
-  (let ((*default-pathname-defaults* (pathname *storage*)))
-    (let ((p (parse-namestring file-name)))
-      (with-open-file (s p :direction :input)
-        (do ((l (read-line s) (read-line s nil 'eof)))
-            ((eq l 'eof) nil)
-          (write-line l))))))
+  (let ((p (concatenate 'string *source-path* "/" file-name)))
+    (with-open-file (s p :direction :input)
+      (do ((l (read-line s) (read-line s nil 'eof)))
+	  ((eq l 'eof) nil)
+	(write-line l)))))
 
 (defun setup-sectors ()
   (dotimes (j 8)

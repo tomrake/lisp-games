@@ -1,0 +1,4 @@
+### These files should always have unix line ends
+
+startrek.hlp text eol=lf
+startrek.pic text eol=lf
